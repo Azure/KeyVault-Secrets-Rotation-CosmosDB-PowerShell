@@ -1,18 +1,18 @@
-## Key Vault Rotation Function for [ServiceType] Changelog
+## Key Vault Rotation Function for CosmosDB Changelog
 
-<a name="Keyvault-Rotation-[ServiceType]-PowerShell"></a>
+<a name="Keyvault-Rotation-CosmosDB-PowerShell"></a>
 
-# Keyvault-Rotation-[ServiceType]-PowerShell (2020-12-22)
+# Keyvault-Rotation-CosmosDB-PowerShell (2020-12-22)
 
 *Features*
 
-* Rotation function for [ServiceType] key triggered by Event Grid (AKV[ServiceType]Rotation)
+* Rotation function for CosmosDB key triggered by Event Grid (AKVCosmosDBRotation)
 
-* Rotation function for [ServiceType] key triggered by HTTP call(AKV[ServiceType]RotationHttp)
+* Rotation function for CosmosDB key triggered by HTTP call(AKVCosmosDBRotationHttp)
 
 * ARM template for function deployment
 
-* ARM template for adding [ServiceType] key to existing function
+* ARM template for adding CosmosDB key to existing function
 
 *Bug Fixes*
 

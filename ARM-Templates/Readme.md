@@ -1,35 +1,35 @@
-# [ServiceType] keys rotation ARM templates
+# CosmosDB keys rotation ARM templates
 
-This template creates below components to help demonstrate [ServiceType] keys rotation in Key Vault using Function and Event Grid notification.
+This template creates below components to help demonstrate CosmosDB keys rotation in Key Vault using Function and Event Grid notification.
 
-### [ServiceType] keys rotation functions ARM template:
+### CosmosDB keys rotation functions ARM template:
 
 Components:
 
 - App Service Plan
-- Function App with access to Key Vault and [ServiceType] 
-- Functions to rotate [ServiceType] keys
+- Function App with access to Key Vault and CosmosDB 
+- Functions to rotate CosmosDB keys
 - Event Subscription
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/<link to raw azuredeploy.json> i.e. https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FKeyVault-Secrets-Rotation-StorageAccount-PowerShell%2Fmain%2FARM-Templates%2FFunction%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FKeyVault-Secrets-Rotation-CosmosDB-PowerShell%2Fmain%2FARM-Templates%2FFunction%2Fazuredeploy.json" target="_blank">
     <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
 </a>
-<a href="http://armviz.io/#/?load=<link to raw azuredeploy.json> i.e. https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FKeyVault-Secrets-Rotation-StorageAccount-PowerShell%2Fmain%2FARM-Templates%2FFunction%2Fazuredeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FKeyVault-Secrets-Rotation-CosmosDB-PowerShell%2Fmain%2FARM-Templates%2FFunction%2Fazuredeploy.json" target="_blank">
     <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png"/>
 </a>
 
-### Event subscription for existing [ServiceType] keys rotation function ARM template
+### Event subscription for existing CosmosDB keys rotation function ARM template
 
 Components:
 
 - Event Subscription
-- Access for Function to access [ServiceType] keys
+- Access for Function to access CosmosDB keys
 
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/<link to raw azuredeploy.json> i.e. https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FKeyVault-Secrets-Rotation-StorageAccount-PowerShell%2Fmain%2FARM-Templates%2FAdd-Event-Subscription%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FKeyVault-Secrets-Rotation-CosmosDB-PowerShell%2Fmain%2FARM-Templates%2FAdd-Event-Subscription%2Fazuredeploy.json" target="_blank">
     <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
 </a>
-<a href="http://armviz.io/#/?load=<link to raw azuredeploy.json> i.e. https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2KeyVault-Secrets-Rotation-StorageAccount-PowerShell%2Fmain%2FARM-Templates%2FAdd-Event-Subscription%2Fazuredeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2KeyVault-Secrets-Rotation-CosmosDB-PowerShell%2Fmain%2FARM-Templates%2FAdd-Event-Subscription%2Fazuredeploy.json" target="_blank">
     <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png"/>
 </a>
 

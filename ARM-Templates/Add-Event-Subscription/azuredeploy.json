@@ -2,18 +2,18 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "[ServiceType]RG": {
+        "CosmosDBRG": {
             "defaultValue": "[resourceGroup().name]",
             "type": "String",
             "metadata": {
-                "description": "The name of the resource group where [ServiceType] with keys to rotate has deployed."
+                "description": "The name of the resource group where CosmosDB with keys to rotate has deployed."
             }
         },
-        "[ServiceType]Name": {
+        "CosmosDBName": {
             "defaultValue": "",
             "type": "String",
             "metadata": {
-                "description": "The name of the [ServiceType] with keys to rotate."
+                "description": "The name of the CosmosDB with keys to rotate."
             }
         },
         "keyVaultRG": {
@@ -31,17 +31,17 @@
             }
         },
         "functionAppName": {
-            "defaultValue": "[concat(resourceGroup().name, '-[ServiceType]-rotation-fnapp')]",
+            "defaultValue": "[concat(resourceGroup().name, '-CosmosDB-rotation-fnapp')]",
             "type": "String",
             "metadata": {
                 "description": "The name of the function app that you wish to use."
             }
 		},
 		"secretName": {
-            "defaultValue": "[ServiceType]Key2",
+            "defaultValue": "CosmosDBKey2",
             "type": "String",
             "metadata": {
-                "description": "The name of the secret where [ServiceType] keys are stored."
+                "description": "The name of the secret where CosmosDB keys are stored."
             }
         }
        
@@ -79,7 +79,7 @@
                                     "properties": {
                                         "maxEventsPerBatch": 1,
                                         "preferredBatchSizeInKilobytes": 64,
-                                        "resourceId": "[concat(resourceId('Microsoft.Web/sites', parameters('functionAppName')),'/functions/AKV[ServiceType]Rotation')]"
+                                        "resourceId": "[concat(resourceId('Microsoft.Web/sites', parameters('functionAppName')),'/functions/AKVCosmosDBRotation')]"
                                     }
                                 },
                                 "filter": {
@@ -95,7 +95,7 @@
                             "type": "Microsoft.Resources/deployments",
                             "apiVersion": "2019-10-01",
                             "subscriptionId": "[subscription().subscriptionId]",
-                            "resourceGroup": "[parameters('[ServiceType]RG')]",
+                            "resourceGroup": "[parameters('CosmosDBRG')]",
                             "dependsOn": [],
                             "properties": {
                                 "mode": "Incremental",
@@ -104,17 +104,14 @@
                                     "contentVersion": "1.0.0.0",
                                     "resources": [
                                         {
-                            //EXAMPLE OF GRANTING ACCESS TO STORAGE
-                            //                 "type": "Microsoft.Storage/storageAccounts/providers/roleAssignments",
-                            //                 "apiVersion": "2018-09-01-preview",
-                            //                 "name": "[concat(parameters('storageAccountName'), '/Microsoft.Authorization/', guid(concat(parameters('storageAccountName'),reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')),'2019-08-01', 'Full').identity.principalId)))]",
-                            //                 "dependsOn": [
-                                            
-                            //                 ],
-                            //                 "properties": {
-                            //                     "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '81a9662b-bebf-436f-a333-f67b29880f12')]",
-                            //                     "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')),'2019-08-01', 'Full').identity.principalId]"
-                            //                 }
+                                            "type": "Microsoft.DocumentDB/databaseAccounts/providers/roleAssignments",
+                                            "apiVersion": "2020-04-01-preview",
+                                            "name": "[concat(parameters('CosmosDBName'), '/Microsoft.Authorization/', guid(concat(parameters('CosmosDBName'),reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')),'2019-08-01', 'Full').identity.principalId)))]",
+                                            "dependsOn": [],
+                                            "properties": {
+                                                "roleDefinitionId": "/subscriptions/[subscription().subscriptionId]/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+                                                "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')),'2019-08-01', 'Full').identity.principalId]"
+                                            }
                                         }
                                     ]
                                 }

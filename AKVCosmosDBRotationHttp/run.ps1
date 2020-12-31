@@ -1,42 +1,37 @@
-param($eventGridEvent, $TriggerMetadata)
+using namespace System.Net
+
+# Input bindings are passed in via param block.
+param($Request, $TriggerMetadata)
 
 function RegenerateCredential($credentialId, $providerAddress){
     Write-Host "Regenerating credential. Id: $credentialId Resource Id: $providerAddress"
     
-    #Write code to regenerate credential, update your service with new credential and return it
-
-    #EXAMPLE FOR STORAGE
-
-    <#  
-    $storageAccountName = ($providerAddress -split '/')[8]
+    $cosmosDbAccountName = ($providerAddress -split '/')[8]
     $resourceGroupName = ($providerAddress -split '/')[4]
     
-    #Regenerate key 
-    $operationResult = New-AzStorageAccountKey -ResourceGroupName $resourceGroupName -Name $storageAccountName -KeyName $credentialId
-    $newCredentialValue = (Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -AccountName $storageAccountName|where KeyName -eq $credentialId).value 
+    #Regenerate key
+    $keyType = $credentialId + "MasterKey"
+
+    $operationResult = New-AzCosmosDBAccountKey -ResourceGroupName $resourceGroupName -Name $cosmosDbAccountName -KeyKind $credentialId.ToLower()
+    $dBKeys = Get-AzCosmosDBAccountKey -ResourceGroupName $resourceGroupName -Name $cosmosDbAccountName -Type "Keys"
+
+    $newCredentialValue = $dBKeys.Item($keyType)
+
     return $newCredentialValue
-    
-    #>
 }
 
 function GetAlternateCredentialId($credentialId){
-    #Write code to get alternate credential id for your service
-
-   #EXAMPLE FOR STORAGE
-
-   <#
-   $validCredentialIdsRegEx = 'key[1-2]'
-   
-   If($credentialId -NotMatch $validCredentialIdsRegEx){
-       throw "Invalid credential id: $credentialId. Credential id must follow this pattern:$validCredentialIdsRegEx"
-   }
-   If($credentialId -eq 'key1'){
-       return "key2"
-   }
-   Else{
-       return "key1"
-   }
-   #>
+    $validCredentialIds = "Primary", "Secondary"
+    
+    If($credentialId -notin $validCredentialIds){
+        throw "Invalid credential id: $keyId. Credential id must be one of following:$validCredentialIds"
+    }
+    If($credentialId -eq "Primary"){
+        return "Secondary"
+    }
+    Else{
+        return "Primary"
+    }
 }
 
 function AddSecretToKeyVault($keyVAultName,$secretName,$secretvalue,$exprityDate,$tags){
@@ -80,17 +75,43 @@ function RoatateSecret($keyVaultName,$secretName){
 
     Write-Host "New credential added to Key Vault. Secret Name: $secretName"
 }
-$ErrorActionPreference = "Stop"
-# Make sure to pass hashtables to Out-String so they're logged correctly
-$eventGridEvent | ConvertTo-Json | Write-Host
 
-$secretName = $eventGridEvent.subject
-$keyVaultName = $eventGridEvent.data.VaultName
-Write-Host "Key Vault Name: $keyVAultName"
-Write-Host "Secret Name: $secretName"
 
-#Rotate secret
-Write-Host "Rotation started."
-RoatateSecret $keyVAultName $secretName
-Write-Host "Secret Rotated Successfully"
+# Write to the Azure Functions log stream.
+Write-Host "HTTP trigger function processed a request."
+
+Try{
+    #Validate request paramaters
+    $keyVAultName = $Request.Query.KeyVaultName
+    $secretName = $Request.Query.SecretName
+    if (-not $keyVAultName -or -not $secretName ) {
+        $status = [HttpStatusCode]::BadRequest
+        $body = "Please pass a KeyVaultName and SecretName on the query string"
+        break
+    }
+    
+    Write-Host "Key Vault Name: $keyVAultName"
+    Write-Host "Secret Name: $secretName"
+    
+    #Rotate secret
+    Write-Host "Rotation started. Secret Name: $secretName"
+    RoatateSecret $keyVAultName $secretName
+
+    $status = [HttpStatusCode]::Ok
+    $body = "Secret Rotated Successfully"
+     
+}
+Catch{
+    $status = [HttpStatusCode]::InternalServerError
+    $body = "Error during secret rotation"
+    Write-Error "Secret Rotation Failed: $_.Exception.Message"
+}
+Finally
+{
+    # Associate values to output bindings by calling 'Push-OutputBinding'.
+    Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
+        StatusCode = $status
+        Body = $body
+    })
+}
 
