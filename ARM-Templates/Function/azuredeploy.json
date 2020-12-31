@@ -99,7 +99,7 @@
             "name": "[parameters('functionAppName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', concat(resourceGroup().name, '-CosmosDB-rotation-fnapp'))]",
+                "[resourceId('Microsoft.Web/serverfarms', concat(resourceGroup().name, '-CosmosDB-rotation-fnapp-plan'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('functionStorageAccountName'))]"
             ],
             "kind": "functionapp",
@@ -108,7 +108,7 @@
             },
             "properties": {
                 "enabled": true,
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms',concat(resourceGroup().name, '-CosmosDB-rotation-fnapp'))]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms',concat(resourceGroup().name, '-CosmosDB-rotation-fnapp-plan'))]",
                 "siteConfig": {
                     "appSettings": [
                         {
