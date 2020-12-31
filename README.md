@@ -1,5 +1,3 @@
-# ###THIS IS TEMPLATE PROJECT FOR SECRET ROTATION FUNCTIONS. FOLLOW [THIS](https://github.com/Azure/KeyVault-Secrets-Rotation-Template-PowerShell) STEPS TO CREATE NEW SECRETS ROTATION FUNCTION PROJECT REPOSITORY###.
-
 # KeyVault-Secrets-Rotation-CosmosDB-PowerShell
 
 Functions regenerate individual key (alternating between two keys) in CosmosDB and add regenerated key to Key Vault as new version of the same secret.
