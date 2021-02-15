@@ -43,12 +43,32 @@
             "metadata": {
                 "description": "The name of the secret where CosmosDB keys are stored."
             }
+        },
+        "deploySecretWithCosmosDBKeyToKeyVault": {
+            "defaultValue": "true",
+            "type": "bool",
+            "metadata": {
+                "description": "Add CosmosDB key to key vault. New secret is created with key as value"
+            }
+        },
+        "secretExpirationDateUnixTime": {
+            "type": "int",
+            "metadata": {
+                "description": "Expiry date in seconds since 1970-01-01T00:00:00Z."
+            }
+        },
+		"secretValidityPeriodDays": {
+            "defaultValue": 90,
+            "type": "int",
+            "metadata": {
+                "description": "Secret validity period days. It is used to calculate expiration date for a secret after rotation"
+            }
         }
        
     },
     "variables": {
-		"eventSubscriptionName": "[concat(parameters('functionAppName'),'-',parameters('secretName'))]"
-		
+		"eventSubscriptionName": "[concat(parameters('functionAppName'),'-',parameters('secretName'))]",
+        "ProviderResourceId":"[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('CosmosDBRG'),'/providers/Microsoft.DocumentDB/databaseAccounts/',parameters('CosmosDBName'))]"
     },
     "resources": [
         {
@@ -91,7 +111,26 @@
                             }
                         },
                         {
-                            "name": "grant-access",
+                            "type": "Microsoft.KeyVault/vaults/secrets",
+                            "apiVersion": "2019-09-01",
+                            "condition": "[parameters('deploySecretWithCosmosDBKeyToKeyVault')]",
+                            "name": "[concat(parameters('keyVaultName'), '/', parameters('secretName'))]",
+                            "location": "[resourceGroup().location]",
+                            "dependsOn": [],
+                            "tags": {
+                                "ValidityPeriodDays":"[parameters('secretValidityPeriodDays')]",
+                                "CredentialId":"key1",
+                                "ProviderAddress":"[variables('ProviderResourceId')]"
+                            },
+                            "properties": {
+                                "value": "[listKeys(variables('ProviderResourceId'), '2020-04-01').primaryMasterKey]",
+                                "attributes": {
+                                    "exp": "[parameters('secretExpirationDateUnixTime')]"
+                                }
+                            }
+                        },
+                        {
+                            "name": "grant-access-and-secret-deployment",
                             "type": "Microsoft.Resources/deployments",
                             "apiVersion": "2019-10-01",
                             "subscriptionId": "[subscription().subscriptionId]",
@@ -113,6 +152,7 @@
                                                 "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')),'2019-08-01', 'Full').identity.principalId]"
                                             }
                                         }
+                                          
                                     ]
                                 }
                             }
